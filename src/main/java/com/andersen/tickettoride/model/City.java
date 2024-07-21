@@ -1,6 +1,8 @@
 package com.andersen.tickettoride.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +27,7 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "sourceCity", targetEntity = Route.class)
+    @OneToMany(mappedBy = "sourceCity", targetEntity = Route.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
-    private List<City> adjacentCities = new ArrayList<>();
+    private List<Route> routes = new ArrayList<>();
 }

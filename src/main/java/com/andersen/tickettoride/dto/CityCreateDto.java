@@ -13,9 +13,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CityDto {
+public class CityCreateDto {
 
-    private Long id;
     private String name;
     private List<RouteCreateDto> routes;
 }
