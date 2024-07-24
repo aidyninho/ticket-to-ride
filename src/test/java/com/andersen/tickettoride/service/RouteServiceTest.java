@@ -1,5 +1,7 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.dto.RouteInputDto;
+import com.andersen.tickettoride.dto.RouteOutputDto;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Route;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,16 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 class RouteServiceTest {
 
-    private static final long SOURCE_CITY_ID = 30L;
-    private static final long DESTINATION_CITY_ID = 31L;
-    private static final long SEGMENTS = 1L;
-    private static final long ID = 29L;
+    private static final long SOURCE_CITY_ID = 1L;
+    private static final long DESTINATION_CITY_ID = 3L;
+    private static final long SEGMENTS = 5L;
+    private static final long ID = 36L;
     @Autowired
     private RouteService routeService;
     @Autowired
@@ -38,11 +42,26 @@ class RouteServiceTest {
 
     @Test
     public void save() {
-        routeService.save(route);
+        City source = cityService.findById(SOURCE_CITY_ID).get();
+        City destination = cityService.findById(DESTINATION_CITY_ID).get();
 
-        Route savedRoute = routeService.findById(ID).orElse(null);
+        RouteInputDto inputDto = RouteInputDto.builder()
+                .departure(source.getName())
+                .arrival(destination.getName())
+                .build();
 
-        assertEquals(ID, savedRoute.getId());
+        RouteOutputDto outputDto = routeService.findPriceOfATicketOfRoute(inputDto);
+
+        assertEquals(10L, outputDto.getSegments());
+    }
+
+    @Test
+    public void evaluatePrice() {
+        BigDecimal bigDecimal = routeService.evaluatePrice(1);
+        bigDecimal = routeService.evaluatePrice(2);
+        bigDecimal = routeService.evaluatePrice(3);
+        bigDecimal = routeService.evaluatePrice(5);
+        bigDecimal = routeService.evaluatePrice(6);
     }
 
     @Test

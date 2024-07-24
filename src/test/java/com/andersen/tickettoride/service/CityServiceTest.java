@@ -1,7 +1,6 @@
 package com.andersen.tickettoride.service;
 
 import com.andersen.tickettoride.model.City;
-import com.andersen.tickettoride.service.CityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SpringBootTest
 class CityServiceTest {
 
-    private static final long ID = 30L;
+    private static final long ID = 1L;
     @Autowired
     private CityService cityService;
 
