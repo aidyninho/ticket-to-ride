@@ -44,6 +44,7 @@ public class TicketService {
 
     @Transactional
     public TicketOutputDto save(TicketInputDto ticket) {
+        // TODO: 25.07.2024 make it readable
         City departureCity = cityService.findByName(ticket.getDeparture()).orElseThrow();
         City arrivalCity = cityService.findByName(ticket.getArrival()).orElseThrow();
         User user = userService.findByUsername(ticket.getUsername()).orElseThrow();

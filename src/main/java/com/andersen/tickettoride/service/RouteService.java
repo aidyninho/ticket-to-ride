@@ -8,6 +8,7 @@ import com.andersen.tickettoride.model.Route;
 import com.andersen.tickettoride.repository.RouteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,10 +21,14 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final GraphService graphService;
     private final CityService cityService;
-    private final Currency DEFAULT_CURRENCY = Currency.GBP;
-    private final double PRICE_FOR_ONE_SEGMENT = 5;
-    private final double PRICE_FOR_TWO_SEGMENTS = 7;
-    private final double PRICE_FOR_THREE_SEGMENTS = 10;
+    @Value("${app.currency}")
+    private Currency DEFAULT_CURRENCY;
+    @Value("${app.price.one-segment}")
+    private double PRICE_FOR_ONE_SEGMENT;
+    @Value("${app.price.two-segments}")
+    private double PRICE_FOR_TWO_SEGMENTS;
+    @Value("${app.price.three-segments}")
+    private double PRICE_FOR_THREE_SEGMENTS;
 
     @Autowired
     public RouteService(RouteRepository routeRepository, GraphService graphService, CityService cityService) {

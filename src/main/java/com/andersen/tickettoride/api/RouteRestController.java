@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/route")
+@RequestMapping("/api/v1/routes")
 public class RouteRestController {
 
     private final RouteService routeService;

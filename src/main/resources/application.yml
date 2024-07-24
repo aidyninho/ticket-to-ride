@@ -1,3 +1,10 @@
+app:
+  currency: GBP
+  price:
+    one-segment: 5
+    two-segments: 7
+    three-segments: 10
+
 spring:
   application:
     name: ticket-to-ride

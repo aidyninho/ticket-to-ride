@@ -31,7 +31,6 @@ class TicketServiceTest {
     public void setUser() {
         user = userService.findById(3L).orElse(null);
         ticket = TicketInputDto.builder()
-                .user(user)
                 .currency(Currency.GBP)
                 .departure("Coventry")
                 .arrival("Reading")
