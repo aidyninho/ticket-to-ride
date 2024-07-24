@@ -1,6 +1,5 @@
 package com.andersen.tickettoride.service;
 
-import com.andersen.tickettoride.mapper.RouteMapper;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.repository.CityRepository;
 import jakarta.transaction.Transactional;
