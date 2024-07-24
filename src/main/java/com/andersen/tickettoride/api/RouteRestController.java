@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/route")
 public class RouteRestController {
 
-    private RouteService routeService;
+    private final RouteService routeService;
 
     @Autowired
     public RouteRestController(RouteService routeService) {

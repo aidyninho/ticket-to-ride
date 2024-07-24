@@ -1,6 +1,5 @@
 package com.andersen.tickettoride.repository;
 
-import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

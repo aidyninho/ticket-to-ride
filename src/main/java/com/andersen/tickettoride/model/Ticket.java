@@ -1,6 +1,8 @@
 package com.andersen.tickettoride.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,6 +33,7 @@ public class Ticket {
     private City destinationCity;
     private Long segments;
     private BigDecimal price;
+    @Enumerated(EnumType.STRING)
     private Currency currency;
     @ManyToOne
     @JoinColumn(name = "user_id")
