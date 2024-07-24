@@ -17,5 +17,4 @@ public class CityDto {
 
     private Long id;
     private String name;
-    private List<RouteCreateDto> routes;
 }

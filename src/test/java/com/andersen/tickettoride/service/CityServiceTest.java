@@ -1,24 +1,18 @@
-package com.andersen.tickettoride;
+package com.andersen.tickettoride.service;
 
-import com.andersen.tickettoride.dto.CityCreateDto;
-import com.andersen.tickettoride.dto.CityDto;
-import com.andersen.tickettoride.dto.RouteCreateDto;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.service.CityService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
-class TicketToRideApplicationTests {
+class CityServiceTest {
 
-    private static final long ID = 29L;
+    private static final long ID = 30L;
     @Autowired
     private CityService cityService;
 

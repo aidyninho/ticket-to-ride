@@ -27,7 +27,7 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "sourceCity", targetEntity = Route.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sourceCity", targetEntity = Route.class)
     @ToString.Exclude
     private List<Route> routes = new ArrayList<>();
 }

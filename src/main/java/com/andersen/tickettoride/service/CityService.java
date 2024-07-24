@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.dto.CityCreateDto;
 import com.andersen.tickettoride.dto.CityDto;
 import com.andersen.tickettoride.mapper.CityMapper;
 import com.andersen.tickettoride.mapper.RouteMapper;
@@ -8,6 +9,8 @@ import com.andersen.tickettoride.repository.CityRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CityService {
@@ -23,14 +26,22 @@ public class CityService {
         this.routeMapper = routeMapper;
     }
 
-    public City findById(Long id) {
-        return cityRepository.findById(id).get();
+    public Optional<City> findById(Long id) {
+        return cityRepository.findById(id);
     }
 
     @Transactional
     public City save(City city) {
         return cityRepository.save(city);
-//        cityRepository.save(cityMapper.toModel(city));
-//        return city;
+    }
+
+    @Transactional
+    public City update(City city) {
+        return save(city);
+    }
+
+    @Transactional
+    public void delete(City city) {
+        cityRepository.delete(city);
     }
 }

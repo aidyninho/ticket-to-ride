@@ -8,6 +8,8 @@ import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Route;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface RouteMapper {
 
@@ -18,4 +20,6 @@ public interface RouteMapper {
     Route toModel(RouteCreateDto dto);
 
     RouteCreateDto toCreateDto(Route model);
+
+    List<Route> toModelList(List<RouteCreateDto> dtoList);
 }

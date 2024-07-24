@@ -6,16 +6,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CityCreateDto {
+public class RouteInputDto {
 
-    private Long id;
-    private String name;
-    private List<RouteCreateDto> routes;
+    private String departure;
+    private String arrival;
 }

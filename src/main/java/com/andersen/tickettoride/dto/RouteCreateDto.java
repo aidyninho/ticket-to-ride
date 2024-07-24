@@ -13,6 +13,7 @@ import lombok.Setter;
 @Builder
 public class RouteCreateDto {
 
+    private Long id;
     private CityDto sourceCity;
     private CityDto destinationCity;
     private Long segments;
