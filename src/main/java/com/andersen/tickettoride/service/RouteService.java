@@ -39,7 +39,7 @@ public class RouteService {
         this.cityService = cityService;
     }
 
-    public BigDecimal evaluatePrice(long segments) {
+    private BigDecimal evaluatePrice(long segments) {
         double price = 0;
         price += (segments / 3) * PRICE_FOR_THREE_SEGMENTS;
         segments %= 3;

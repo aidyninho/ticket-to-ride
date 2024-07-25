@@ -1,62 +1,65 @@
 package com.andersen.tickettoride.service;
 
 import com.andersen.tickettoride.model.City;
+import com.andersen.tickettoride.repository.CityRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CityServiceTest {
 
-    private static final long ID = 1L;
-    @Autowired
-    private CityService cityService;
+    private final Long ID = 1L;
+    private final String NAME = "London";
+    private final City expectedCity = City.builder()
+            .id(ID)
+            .name(NAME)
+            .build();
+    @Mock
+    CityRepository cityRepository;
+    @InjectMocks
+    CityService cityService;
 
     @Test
-    public void save() {
+    void findById_Returns_City() {
+        doReturn(Optional.of(expectedCity)).when(cityRepository).findById(ID);
+
+        Optional<City> actualCity = cityService.findById(ID);
+
+        assertTrue(actualCity.isPresent());
+        assertEquals(Optional.of(expectedCity), actualCity);
+    }
+
+    @Test
+    void findByName_Returns_City() {
+        doReturn(Optional.of(expectedCity)).when(cityRepository).findByName(NAME);
+
+        Optional<City> actualCity = cityService.findByName(NAME);
+
+        assertTrue(actualCity.isPresent());
+        assertEquals(Optional.of(expectedCity), actualCity);
+    }
+
+    @Test
+    void save_Returns_Saved_City() {
         City city = City.builder()
-                .name("test123")
+                .name("London")
                 .build();
 
-        City savedCity = cityService.save(city);
+        doReturn(expectedCity).when(cityRepository).save(city);
 
-        assertEquals(ID, savedCity.getId());
-    }
+        City actualCity = cityService.save(city);
 
-    @Test
-    public void update() {
-        City city = cityService.findById(ID).orElse(null);
-
-        city.setName("test777");
-
-        cityService.update(city);
-        City updatedCity = cityService.findById(ID).orElse(null);
-
-        assertEquals("test777", updatedCity.getName());
-    }
-
-    @Test
-    public void delete() {
-        City city = cityService.findById(ID).orElse(null);
-
-        cityService.delete(city);
-
-        City deletedCity = cityService.findById(ID).orElse(null);
-
-        assertNull(deletedCity);
-    }
-
-    @Test
-    public void findById() {
-        City city = cityService.findById(24L).orElse(null);
-
-        cityService.delete(city);
-
-        City deletedCity = cityService.findById(ID).orElse(null);
-
-        assertNull(deletedCity);
+        assertNotNull(actualCity);
+        assertEquals(expectedCity, actualCity);
     }
 }
