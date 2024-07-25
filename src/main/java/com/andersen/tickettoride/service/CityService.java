@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.exception.CityAlreadyExistsException;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.repository.CityRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,9 @@ public class CityService {
 
     @Transactional
     public City save(City city) {
+        if (cityRepository.findByName(city.getName()).isPresent()) {
+            throw new CityAlreadyExistsException();
+        }
         return cityRepository.save(city);
     }
 
