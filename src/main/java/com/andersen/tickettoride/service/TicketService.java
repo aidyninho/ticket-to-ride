@@ -11,6 +11,7 @@ import com.andersen.tickettoride.model.Ticket;
 import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.repository.TicketRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class TicketService {
 
     private final TicketRepository ticketRepository;
@@ -39,7 +41,9 @@ public class TicketService {
 
     @Transactional
     public Ticket save(Ticket ticket) {
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+        log.info("Ticket with id " + savedTicket.getId() + " was saved.");
+        return savedTicket;
     }
 
     @Transactional
@@ -56,6 +60,7 @@ public class TicketService {
         );
 
         if (user.getBalance().compareTo(route.getPrice()) < 0) {
+            log.warn("User " + user.getUsername() + " doesn't have enough balance to save ticket.");
             return getTicketOutputOnFailureDto(ticket, user, route);
         }
 
@@ -69,10 +74,11 @@ public class TicketService {
                 .build();
 
         save(model);
-        model.getUser().setBalance(model.getUser().getBalance().subtract(route.getPrice()));
+        BigDecimal balanceLeft = model.getUser().getBalance().subtract(route.getPrice());
+        model.getUser().setBalance(balanceLeft);
         model.getUser().getTickets().add(model);
 
-        return getTicketOutputOnSuccessDto(ticket, user, route);
+        return getTicketOutputOnSuccessDto(ticket, route, balanceLeft);
     }
 
     @Transactional
@@ -82,14 +88,17 @@ public class TicketService {
 
     @Transactional
     public void delete(Ticket ticket) {
+        log.warn("Ticket with id " + ticket.getId() + " was deleted.");
         ticketRepository.delete(ticket);
     }
 
-    private TicketOutputOnSuccessDto getTicketOutputOnSuccessDto(TicketInputDto ticket, User user, RouteOutputDto route) {
+    private TicketOutputOnSuccessDto getTicketOutputOnSuccessDto(
+            TicketInputDto ticket, RouteOutputDto route, BigDecimal balanceLeft
+    ) {
         TicketOutputOnSuccessDto ticketOutputOnSuccessDto = new TicketOutputOnSuccessDto();
         ticketOutputOnSuccessDto.setSuccess(true);
         ticketOutputOnSuccessDto.setCurrency(ticket.getCurrency());
-        ticketOutputOnSuccessDto.setChange(getDifference(route.getPrice(), user.getBalance()));
+        ticketOutputOnSuccessDto.setChange(getDifference(route.getPrice(), balanceLeft));
         return ticketOutputOnSuccessDto;
     }
 
