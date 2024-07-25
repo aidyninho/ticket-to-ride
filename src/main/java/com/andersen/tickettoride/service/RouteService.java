@@ -1,7 +1,9 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.dto.RouteCreateDto;
 import com.andersen.tickettoride.dto.RouteInputDto;
 import com.andersen.tickettoride.dto.RouteOutputDto;
+import com.andersen.tickettoride.exception.CityNotFoundException;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Currency;
 import com.andersen.tickettoride.model.Route;
@@ -53,8 +55,10 @@ public class RouteService {
             graphService.createGraphFromRoutes(findAll());
         }
 
-        City sourceCity = cityService.findByName(route.getDeparture()).orElseThrow();
-        City destinationCity = cityService.findByName(route.getArrival()).orElseThrow();
+        City sourceCity = cityService.findByName(route.getDeparture())
+                .orElseThrow(CityNotFoundException::new);
+        City destinationCity = cityService.findByName(route.getArrival())
+                .orElseThrow(CityNotFoundException::new);
 
         long shortestPathBetweenCities = getShortestSegmentsBetweenCities(sourceCity, destinationCity);
 
@@ -77,15 +81,28 @@ public class RouteService {
         return routeRepository.findAll();
     }
 
-    @Transactional
-    public Route save(Route route) {
-        graphService.addRouteToGraph(route);
-        return routeRepository.save(route);
+    public Route save(RouteCreateDto route) {
+        City sourceCity = cityService.findByName(route.getDeparture()).orElseThrow(CityNotFoundException::new);
+        City destinationCity = cityService.findByName(route.getArrival()).orElseThrow(CityNotFoundException::new);
+        Route model = Route.builder()
+                .sourceCity(sourceCity)
+                .destinationCity(destinationCity)
+                .segments(route.getSegments())
+                .build();
+        return save(model);
+    }
+
+    public Route update(Route route) {
+        return save(route);
     }
 
     @Transactional
-    public Route update(Route route) {
-        return save(route);
+    public Route save(Route route) {
+        if (graphService.isEmpty()) {
+            graphService.createGraphFromRoutes(findAll());
+        }
+        graphService.addRouteToGraph(route);
+        return routeRepository.save(route);
     }
 
     @Transactional

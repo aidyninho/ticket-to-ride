@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,5 +30,6 @@ public class City {
     private String name;
     @OneToMany(mappedBy = "sourceCity", targetEntity = Route.class)
     @ToString.Exclude
+    @JsonIgnore
     private List<Route> routes = new ArrayList<>();
 }

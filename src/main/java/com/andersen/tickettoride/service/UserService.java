@@ -1,6 +1,7 @@
 package com.andersen.tickettoride.service;
 
 import com.andersen.tickettoride.dto.UserDto;
+import com.andersen.tickettoride.exception.UsernameAlreadyExistsException;
 import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -47,6 +48,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDto save(User user) {
+        if (findByUsername(user.getUsername()).isPresent()) {
+            throw new UsernameAlreadyExistsException();
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return UserDto.builder()
@@ -57,7 +61,11 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDto update(User user) {
-        return save(user);
+        userRepository.save(user);
+        return UserDto.builder()
+                .username(user.getUsername())
+                .balance(user.getBalance())
+                .build();
     }
 
     @Transactional

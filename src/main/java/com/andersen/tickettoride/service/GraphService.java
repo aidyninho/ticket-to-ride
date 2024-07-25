@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.exception.RouteAlreadyExistsException;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Route;
 import org.jgrapht.GraphPath;
@@ -30,6 +31,9 @@ public class GraphService {
         graph.addVertex(route.getSourceCity());
         graph.addVertex(route.getDestinationCity());
         DefaultWeightedEdge edge = graph.addEdge(route.getSourceCity(), route.getDestinationCity());
+        if (edge == null) {
+            throw new RouteAlreadyExistsException();
+        }
         graph.setEdgeWeight(edge, route.getSegments());
     }
 

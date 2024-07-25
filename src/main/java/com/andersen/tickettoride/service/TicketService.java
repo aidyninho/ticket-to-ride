@@ -32,6 +32,7 @@ public class TicketService {
         this.routeService = routeService;
         this.userService = userService;
     }
+
     public Optional<Ticket> findById(Long id) {
         return ticketRepository.findById(id);
     }
@@ -49,9 +50,9 @@ public class TicketService {
 
         RouteOutputDto route = routeService.findPriceOfATicketOfRoute(
                 RouteInputDto.builder()
-                .departure(departureCity.getName())
-                .arrival(arrivalCity.getName())
-                .build()
+                        .departure(departureCity.getName())
+                        .arrival(arrivalCity.getName())
+                        .build()
         );
 
         if (user.getBalance().compareTo(route.getPrice()) < 0) {
