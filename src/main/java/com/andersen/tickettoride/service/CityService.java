@@ -4,12 +4,14 @@ import com.andersen.tickettoride.exception.CityAlreadyExistsException;
 import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.repository.CityRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class CityService {
 
     private final CityRepository cityRepository;
@@ -32,7 +34,9 @@ public class CityService {
         if (cityRepository.findByName(city.getName()).isPresent()) {
             throw new CityAlreadyExistsException();
         }
-        return cityRepository.save(city);
+        City savedCity = cityRepository.save(city);
+        log.info("City " + city.getName() + " was saved.");
+        return savedCity;
     }
 
     @Transactional
@@ -43,5 +47,6 @@ public class CityService {
     @Transactional
     public void delete(City city) {
         cityRepository.delete(city);
+        log.info("City " + city.getName() + " was deleted.");
     }
 }

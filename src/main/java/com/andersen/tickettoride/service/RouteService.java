@@ -9,6 +9,7 @@ import com.andersen.tickettoride.model.Currency;
 import com.andersen.tickettoride.model.Route;
 import com.andersen.tickettoride.repository.RouteRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class RouteService {
 
     private final RouteRepository routeRepository;
@@ -102,12 +104,15 @@ public class RouteService {
             graphService.createGraphFromRoutes(findAll());
         }
         graphService.addRouteToGraph(route);
-        return routeRepository.save(route);
+        Route savedRoute = routeRepository.save(route);
+        log.info("Route from " + route.getSourceCity().getName() + " to " + route.getDestinationCity().getName() + " was saved.");
+        return savedRoute;
     }
 
     @Transactional
     public void delete(Route route) {
         graphService.deleteRouteInGraph(route);
+        log.warn("Route from " + route.getSourceCity().getName() + " to " + route.getDestinationCity().getName() + " was deleted.");
         routeRepository.delete(route);
     }
 }

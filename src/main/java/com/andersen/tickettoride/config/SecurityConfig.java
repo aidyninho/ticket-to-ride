@@ -21,7 +21,7 @@ public class SecurityConfig {
 
         http.csrf().disable()
                 .authorizeHttpRequests((requests) -> requests
-                                .requestMatchers("/api/v1/routes/find", "/api/v1/users/save").permitAll()
+                        .requestMatchers("/api/v1/routes/find", "/api/v1/users/save").permitAll()
                         .anyRequest().authenticated()
                 ).httpBasic(Customizer.withDefaults())
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
