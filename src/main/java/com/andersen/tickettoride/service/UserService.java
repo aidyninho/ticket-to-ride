@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.service;
 
+import com.andersen.tickettoride.dto.UserDto;
 import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -45,13 +46,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User save(User user) {
+    public UserDto save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
+        return UserDto.builder()
+                .username(user.getUsername())
+                .balance(user.getBalance())
+                .build();
     }
 
     @Transactional
-    public User update(User user) {
+    public UserDto update(User user) {
         return save(user);
     }
 

@@ -56,13 +56,17 @@ public class RouteService {
         City sourceCity = cityService.findByName(route.getDeparture()).orElseThrow();
         City destinationCity = cityService.findByName(route.getArrival()).orElseThrow();
 
-        long shortestPathBetweenCities = (long) graphService.findShortestPathBetweenCities(sourceCity, destinationCity);
+        long shortestPathBetweenCities = getShortestSegmentsBetweenCities(sourceCity, destinationCity);
 
         return RouteOutputDto.builder()
                 .segments(shortestPathBetweenCities)
                 .currency(DEFAULT_CURRENCY)
                 .price(evaluatePrice(shortestPathBetweenCities))
                 .build();
+    }
+
+    private long getShortestSegmentsBetweenCities(City sourceCity, City destinationCity) {
+        return (long) graphService.findShortestPathBetweenCities(sourceCity, destinationCity);
     }
 
     public Optional<Route> findById(Long id) {

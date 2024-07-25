@@ -1,5 +1,6 @@
 package com.andersen.tickettoride.api;
 
+import com.andersen.tickettoride.dto.UserDto;
 import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class UserRestController {
     }
 
     @PostMapping("/save")
-    public User save(@RequestBody User user) {
+    public UserDto save(@RequestBody User user) {
         return userService.save(user);
     }
 }
