@@ -1,66 +1,84 @@
 package com.andersen.tickettoride.service;
 
-import com.andersen.tickettoride.dto.RouteInputDto;
-import com.andersen.tickettoride.dto.RouteOutputDto;
-import com.andersen.tickettoride.model.City;
+import com.andersen.tickettoride.dto.UserDto;
 import com.andersen.tickettoride.model.Role;
-import com.andersen.tickettoride.model.Route;
 import com.andersen.tickettoride.model.User;
-import org.junit.jupiter.api.BeforeEach;
+import com.andersen.tickettoride.repository.UserRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    private static final long ID = 4L;
-    @Autowired
+    private final long ID = 1L;
+    private final String USERNAME = "user";
+    private final String PASSWORD = "aidyninho";
+    private final User expectedUser = User.builder()
+            .id(ID)
+            .username(USERNAME)
+            .password(PASSWORD)
+            .role(Role.TRAVELLER)
+            .balance(BigDecimal.TEN)
+            .build();
+
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @InjectMocks
     private UserService userService;
-    private User user;
 
-    @BeforeEach
-    public void setUser() {
-        user = User.builder()
-                .username("test")
-                .password("test")
+    @Test
+    void findById_Returns_User() {
+        doReturn(Optional.of(expectedUser)).when(userRepository).findById(ID);
+
+        Optional<User> actualUser = userService.findById(ID);
+
+        assertTrue(actualUser.isPresent());
+        assertEquals(Optional.of(expectedUser), actualUser);
+    }
+
+    @Test
+    void findByUsername_Returns_User() {
+        doReturn(Optional.of(expectedUser)).when(userRepository).findByUsername(USERNAME);
+
+        Optional<User> actualUser = userService.findByUsername(USERNAME);
+
+        assertTrue(actualUser.isPresent());
+        assertEquals(Optional.of(expectedUser), actualUser);
+    }
+
+    @Test
+    void save_Returns_UserDto() {
+        User user = User.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
                 .role(Role.TRAVELLER)
+                .balance(BigDecimal.TEN)
                 .build();
-    }
 
-    @Test
-    public void save() {
-        userService.save(user);
+        UserDto userDto = UserDto.builder()
+                .username(USERNAME)
+                .balance(BigDecimal.TEN)
+                .build();
 
-        User savedUser = userService.findById(ID).orElse(null);
+        doReturn("$2a$10$fcBTNPwEDDJRYAI7PbcYHODh6/R7HNfbFwQ9Z8arXd6qTWqceZk5C")
+                .when(passwordEncoder).encode(PASSWORD);
+        doReturn(user).when(userRepository).save(user);
 
-        assertEquals(ID, savedUser.getId());
-    }
+        UserDto actualUser = userService.save(user);
 
-    @Test
-    public void update() {
-        User user1 = userService.findById(4L).orElse(null);
-
-        user1.setUsername("asdf");
-        user1.setPassword("asdf");
-        user1.setRole(Role.ADMIN);
-        user1.setBalance(new BigDecimal("2134"));
-
-        userService.update(user1);
-    }
-
-    @Test
-    public void delete() {
-        userService.delete(userService.findById(4L).orElse(null));
-    }
-
-    @Test
-    public void findById() {
-
+        assertEquals(userDto.getUsername(), actualUser.getUsername());
     }
 }

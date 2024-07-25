@@ -1,69 +1,85 @@
 package com.andersen.tickettoride.service;
 
-import com.andersen.tickettoride.dto.TicketInputDto;
-import com.andersen.tickettoride.dto.TicketOutputDto;
+import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.model.Currency;
-import com.andersen.tickettoride.model.Role;
 import com.andersen.tickettoride.model.Ticket;
 import com.andersen.tickettoride.model.User;
-import org.junit.jupiter.api.BeforeEach;
+import com.andersen.tickettoride.repository.TicketRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class TicketServiceTest {
 
-    private static final long ID = 1L;
-    @Autowired
-    private TicketService ticketService;
-    @Autowired
+    private final long ID = 1L;
+    @Mock
+    private TicketRepository ticketRepository;
+    @Mock
+    private CityService cityService;
+    @Mock
+    private RouteService routeService;
+    @Mock
     private UserService userService;
-    private TicketInputDto ticket;
-    private User user;
+    @InjectMocks
+    private TicketService ticketService;
 
-    @BeforeEach
-    public void setUser() {
-        user = userService.findById(3L).orElse(null);
-        ticket = TicketInputDto.builder()
+    @Test
+    void findById_Returns_Ticket() {
+        Ticket ticket = Ticket.builder()
+                .id(ID)
+                .user(User.builder().build())
+                .price(BigDecimal.TEN)
+                .sourceCity(City.builder().build())
+                .destinationCity(City.builder().build())
                 .currency(Currency.GBP)
-                .departure("Coventry")
-                .arrival("Reading")
+                .segments(3L)
                 .build();
+
+        doReturn(Optional.of(ticket)).when(ticketRepository).findById(ID);
+
+        Optional<Ticket> actualTicket = ticketService.findById(ID);
+
+        assertTrue(actualTicket.isPresent());
+        assertEquals(Optional.of(ticket), actualTicket);
     }
 
     @Test
-    public void save() {
-        TicketOutputDto save = ticketService.save(ticket);
+    void save_Returns_Ticket() {
+        Ticket ticket = Ticket.builder()
+                .id(ID)
+                .user(User.builder().build())
+                .price(BigDecimal.TEN)
+                .sourceCity(City.builder().build())
+                .destinationCity(City.builder().build())
+                .currency(Currency.GBP)
+                .segments(3L)
+                .build();
+        Ticket ticketWithoutId = Ticket.builder()
+                .user(User.builder().build())
+                .price(BigDecimal.TEN)
+                .sourceCity(City.builder().build())
+                .destinationCity(City.builder().build())
+                .currency(Currency.GBP)
+                .segments(3L)
+                .build();
 
-        Optional<Ticket> byId = ticketService.findById(ID);
-        assertEquals(ID, byId.get().getId());
-    }
+        doReturn(ticket).when(ticketRepository).save(ticketWithoutId);
 
-    @Test
-    public void update() {
-        User user1 = userService.findById(4L).orElse(null);
+        Ticket actualTicket = ticketService.save(ticketWithoutId);
 
-        user1.setUsername("asdf");
-        user1.setPassword("asdf");
-        user1.setRole(Role.ADMIN);
-        user1.setBalance(new BigDecimal("2134"));
-
-        userService.update(user1);
-    }
-
-    @Test
-    public void delete() {
-        userService.delete(userService.findById(4L).orElse(null));
-    }
-
-    @Test
-    public void findById() {
-
+        assertEquals(ticket, actualTicket);
     }
 }
