@@ -5,6 +5,7 @@ import com.andersen.tickettoride.exception.UsernameAlreadyExistsException;
 import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -53,6 +55,7 @@ public class UserService implements UserDetailsService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+        log.info("User " + user.getUsername() + " was saved.");
         return UserDto.builder()
                 .username(user.getUsername())
                 .balance(user.getBalance())
@@ -62,6 +65,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto update(User user) {
         userRepository.save(user);
+        log.info("User " + user.getUsername() + " was updated.");
         return UserDto.builder()
                 .username(user.getUsername())
                 .balance(user.getBalance())
@@ -70,6 +74,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(User user) {
+        log.info("User " + user.getUsername() + " was deleted.");
         userRepository.delete(user);
     }
 }
