@@ -44,22 +44,19 @@ public class TicketService {
 
     @Transactional
     public TicketOutputDto save(TicketInputDto ticket) {
-        // TODO: 25.07.2024 make it readable
         City departureCity = cityService.findByName(ticket.getDeparture()).orElseThrow();
         City arrivalCity = cityService.findByName(ticket.getArrival()).orElseThrow();
         User user = userService.findByUsername(ticket.getUsername()).orElseThrow();
 
-        RouteOutputDto route = routeService.findPriceOfATicketOfRoute(RouteInputDto.builder()
-                .departure(departureCity.getName())
-                .arrival(arrivalCity.getName())
-                .build());
+        RouteOutputDto route = routeService.findPriceOfATicketOfRoute(
+                RouteInputDto.builder()
+                        .departure(departureCity.getName())
+                        .arrival(arrivalCity.getName())
+                        .build()
+        );
 
         if (user.getBalance().compareTo(route.getPrice()) < 0) {
-            TicketOutputOnFailureDto ticketOutputOnFailureDto = new TicketOutputOnFailureDto();
-            ticketOutputOnFailureDto.setSuccess(false);
-            ticketOutputOnFailureDto.setCurrency(ticket.getCurrency());
-            ticketOutputOnFailureDto.setLackOf(getDifference(route.getPrice(), user.getBalance()));
-            return ticketOutputOnFailureDto;
+            return getTicketOutputOnFailureDto(ticket, user, route);
         }
 
         Ticket model = Ticket.builder()
@@ -75,15 +72,7 @@ public class TicketService {
         model.getUser().setBalance(model.getUser().getBalance().subtract(route.getPrice()));
         model.getUser().getTickets().add(model);
 
-        TicketOutputOnSuccessDto ticketOutputOnSuccessDto = new TicketOutputOnSuccessDto();
-        ticketOutputOnSuccessDto.setSuccess(true);
-        ticketOutputOnSuccessDto.setCurrency(ticket.getCurrency());
-        ticketOutputOnSuccessDto.setChange(getDifference(route.getPrice(), user.getBalance()));
-        return ticketOutputOnSuccessDto;
-    }
-
-    private BigDecimal getDifference(BigDecimal a, BigDecimal b) {
-        return a.subtract(b).abs();
+        return getTicketOutputOnSuccessDto(ticket, user, route);
     }
 
     @Transactional
@@ -94,5 +83,25 @@ public class TicketService {
     @Transactional
     public void delete(Ticket ticket) {
         ticketRepository.delete(ticket);
+    }
+
+    private TicketOutputOnSuccessDto getTicketOutputOnSuccessDto(TicketInputDto ticket, User user, RouteOutputDto route) {
+        TicketOutputOnSuccessDto ticketOutputOnSuccessDto = new TicketOutputOnSuccessDto();
+        ticketOutputOnSuccessDto.setSuccess(true);
+        ticketOutputOnSuccessDto.setCurrency(ticket.getCurrency());
+        ticketOutputOnSuccessDto.setChange(getDifference(route.getPrice(), user.getBalance()));
+        return ticketOutputOnSuccessDto;
+    }
+
+    private TicketOutputOnFailureDto getTicketOutputOnFailureDto(TicketInputDto ticket, User user, RouteOutputDto route) {
+        TicketOutputOnFailureDto ticketOutputOnFailureDto = new TicketOutputOnFailureDto();
+        ticketOutputOnFailureDto.setSuccess(false);
+        ticketOutputOnFailureDto.setCurrency(ticket.getCurrency());
+        ticketOutputOnFailureDto.setLackOf(getDifference(route.getPrice(), user.getBalance()));
+        return ticketOutputOnFailureDto;
+    }
+
+    private BigDecimal getDifference(BigDecimal a, BigDecimal b) {
+        return a.subtract(b).abs();
     }
 }
