@@ -6,7 +6,6 @@ import com.andersen.tickettoride.dto.RouteInputDto;
 import com.andersen.tickettoride.dto.RouteOutputDto;
 import com.andersen.tickettoride.exception.CityNotFoundException;
 import com.andersen.tickettoride.exception.RouteAlreadyExistsException;
-import com.andersen.tickettoride.exception.UsernameAlreadyExistsException;
 import com.andersen.tickettoride.model.Route;
 import com.andersen.tickettoride.service.RouteService;
 import lombok.extern.slf4j.Slf4j;

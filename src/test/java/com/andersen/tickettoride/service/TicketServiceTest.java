@@ -10,8 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -21,18 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class TicketServiceTest {
 
     private final long ID = 1L;
     @Mock
     private TicketRepository ticketRepository;
-    @Mock
-    private CityService cityService;
-    @Mock
-    private RouteService routeService;
-    @Mock
-    private UserService userService;
     @InjectMocks
     private TicketService ticketService;
 

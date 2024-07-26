@@ -6,7 +6,6 @@ import com.andersen.tickettoride.model.User;
 import com.andersen.tickettoride.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,20 +22,23 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    private static org.springframework.security.core.userdetails.User getUserDetailsUserFromModelUser(User user) {
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singleton(user.getRole())
+        );
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username).map(
-                user -> new org.springframework.security.core.userdetails.User(
-                        user.getUsername(),
-                        user.getPassword(),
-                        Collections.singleton(user.getRole())
-                )
+                UserService::getUserDetailsUserFromModelUser
         ).orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user " + username));
     }
 
@@ -53,9 +55,12 @@ public class UserService implements UserDetailsService {
         if (findByUsername(user.getUsername()).isPresent()) {
             throw new UsernameAlreadyExistsException();
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+
         log.info("User " + user.getUsername() + " was saved.");
+
         return UserDto.builder()
                 .username(user.getUsername())
                 .balance(user.getBalance())
@@ -65,7 +70,9 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDto update(User user) {
         userRepository.save(user);
+
         log.info("User " + user.getUsername() + " was updated.");
+
         return UserDto.builder()
                 .username(user.getUsername())
                 .balance(user.getBalance())
@@ -75,6 +82,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void delete(User user) {
         log.info("User " + user.getUsername() + " was deleted.");
+
         userRepository.delete(user);
     }
 }
