@@ -5,7 +5,6 @@ import com.andersen.tickettoride.model.City;
 import com.andersen.tickettoride.repository.CityRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,7 +15,6 @@ public class CityService {
 
     private final CityRepository cityRepository;
 
-    @Autowired
     public CityService(CityRepository cityRepository) {
         this.cityRepository = cityRepository;
     }
@@ -35,7 +33,9 @@ public class CityService {
             throw new CityAlreadyExistsException();
         }
         City savedCity = cityRepository.save(city);
+
         log.info("City " + city.getName() + " was saved.");
+
         return savedCity;
     }
 
@@ -47,6 +47,7 @@ public class CityService {
     @Transactional
     public void delete(City city) {
         cityRepository.delete(city);
+
         log.info("City " + city.getName() + " was deleted.");
     }
 }

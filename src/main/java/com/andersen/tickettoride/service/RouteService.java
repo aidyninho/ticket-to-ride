@@ -10,7 +10,6 @@ import com.andersen.tickettoride.model.Route;
 import com.andersen.tickettoride.repository.RouteRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,6 @@ public class RouteService {
     @Value("${app.price.three-segments}")
     private double PRICE_FOR_THREE_SEGMENTS;
 
-    @Autowired
     public RouteService(RouteRepository routeRepository, GraphService graphService, CityService cityService) {
         this.routeRepository = routeRepository;
         this.graphService = graphService;
@@ -50,6 +48,10 @@ public class RouteService {
         price += segments * PRICE_FOR_ONE_SEGMENT;
 
         return new BigDecimal(price);
+    }
+
+    private long getShortestSegmentsBetweenCities(City sourceCity, City destinationCity) {
+        return (long) graphService.findShortestPathBetweenCities(sourceCity, destinationCity);
     }
 
     public RouteOutputDto findPriceOfATicketOfRoute(RouteInputDto route) {
@@ -71,10 +73,6 @@ public class RouteService {
                 .build();
     }
 
-    private long getShortestSegmentsBetweenCities(City sourceCity, City destinationCity) {
-        return (long) graphService.findShortestPathBetweenCities(sourceCity, destinationCity);
-    }
-
     public Optional<Route> findById(Long id) {
         return routeRepository.findById(id);
     }
@@ -86,11 +84,13 @@ public class RouteService {
     public Route save(RouteCreateDto route) {
         City sourceCity = cityService.findByName(route.getDeparture()).orElseThrow(CityNotFoundException::new);
         City destinationCity = cityService.findByName(route.getArrival()).orElseThrow(CityNotFoundException::new);
+
         Route model = Route.builder()
                 .sourceCity(sourceCity)
                 .destinationCity(destinationCity)
                 .segments(route.getSegments())
                 .build();
+
         return save(model);
     }
 
@@ -103,16 +103,21 @@ public class RouteService {
         if (graphService.isEmpty()) {
             graphService.createGraphFromRoutes(findAll());
         }
+
         graphService.addRouteToGraph(route);
         Route savedRoute = routeRepository.save(route);
+
         log.info("Route from " + route.getSourceCity().getName() + " to " + route.getDestinationCity().getName() + " was saved.");
+
         return savedRoute;
     }
 
     @Transactional
     public void delete(Route route) {
         graphService.deleteRouteInGraph(route);
+
         log.warn("Route from " + route.getSourceCity().getName() + " to " + route.getDestinationCity().getName() + " was deleted.");
+
         routeRepository.delete(route);
     }
 }

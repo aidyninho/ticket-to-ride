@@ -25,16 +25,22 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "source_city_id")
     private City sourceCity;
+
     @ManyToOne
     @JoinColumn(name = "destination_city_id")
     private City destinationCity;
+
     private Long segments;
+
     private BigDecimal price;
+
     @Enumerated(EnumType.STRING)
     private Currency currency;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
