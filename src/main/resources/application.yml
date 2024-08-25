@@ -9,10 +9,13 @@ spring:
   application:
     name: ticket-to-ride
   datasource:
-    url: jdbc:postgresql://localhost:5432/ticket_to_ride_db
+    url: jdbc:postgresql://localhost:5432/ticket_to_ride_test_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: /db/changelog/db.changelog-master.yml
+    clear-checksums: true
   jpa:
     hibernate:
       ddl-auto: none
